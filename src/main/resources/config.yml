@@ -1,0 +1,14 @@
+# PickupWatcher config
+#
+# Messages
+# 	message_single - Message to display when a single item is picked up. Use %item% as placeholder for item name. Supports color codes.
+# 	message_multiple - Message to display when a stack of items is picked up. Use %item% as placeholder for item name and %amount% as placeholder for amount of items. Supports color codes.
+#	message_location - Where to display the message. Allowed values: ACTIONBAR - action bar, above hotbar; CHAT - in chat, this can get crowded.
+#
+# muted_players - list of UUIDs of players who have muted pickup messages.
+
+messages:
+	message_single: "&ePicked up %item%"
+	message_multiple: "&ePicked up %item% (%amount%)"
+	message_location: ACTIONBAR
+muted_players: []

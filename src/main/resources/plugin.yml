@@ -1,0 +1,20 @@
+name: EconRepair
+description: Bukkit plugin to alert users about item pickups.
+author: IAMVISHNU Media
+website: iamvishnu.net
+api-version: 1.16
+version: 1.0.0
+main: net.iamvishnu.PickupWatcher.PickupWatcher
+
+commands:
+	pickup:
+		description: Main plugin command
+		usage: /pickup (subcommand)
+		aliases: [pw, pickupwatcher]
+permissions:
+	pickupwatcher.mute:
+		description: Allows muting pickup notifications
+		default: true
+	pickupwatcher.reload:
+		description: Allows reloading plugin configs
+		default: OP
