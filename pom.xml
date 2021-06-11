@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.iamvishnu</groupId>
   <artifactId>PickupWatcher</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>PickupWatcher</name>
   <description>Bukkit plugin to alert users about item pickups.</description>
   <repositories>

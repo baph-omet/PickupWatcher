@@ -36,7 +36,7 @@ public class Messaging {
 	public static String pluginInfo() {
 		return ChatColor.BLUE + "=====" + ChatColor.YELLOW + plugin.getName() + ChatColor.BLUE
 				+ "=====\nCreated by IAMVISHNU Media ( " + PickupWatcher.plugin.getDescription().getWebsite() + " )\n"
-				+ "GitHub: https://github.com/iamvishnu-media/EconRepair\n" + "Version: "
+				+ "GitHub: https://github.com/iamvishnu-media/" + plugin.getName() + "\n" + "Version: "
 				+ plugin.getDescription().getVersion() + "See " + helpCommand + " for commands.";
 	}
 }
