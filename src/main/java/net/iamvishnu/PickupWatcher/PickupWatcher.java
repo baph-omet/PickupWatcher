@@ -1,9 +1,8 @@
-package PickupWatcher;
+package net.iamvishnu.PickupWatcher;
 
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -31,18 +30,16 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
 		saveDefaultConfig();
 		getConfig();
 
-		boolean isPapermc = false;
-		try {
-			isPapermc = Class.forName("com.destroystokyo.paper.VersionHistoryManager.VersionData") != null;
-		} catch (final ClassNotFoundException e) {
-			Bukkit.getLogger().info("Not paper");
-		}
-
-		if (!isPapermc) {
-			serverLog.severe(
-					"Paper not detected! This plugin requires Paper in order to work. The plugin will now disable.");
-			getServer().getPluginManager().disablePlugin(this);
-		}
+		/*
+		 * boolean isPapermc = false; try { isPapermc =
+		 * Class.forName("com.destroystokyo.paper.VersionHistoryManager.VersionData") !=
+		 * null; } catch (final ClassNotFoundException e) {
+		 * Bukkit.getLogger().info("Not paper"); }
+		 * 
+		 * if (!isPapermc) { serverLog.severe(
+		 * "Paper not detected! This plugin requires Paper in order to work. The plugin will now disable."
+		 * ); getServer().getPluginManager().disablePlugin(this); }
+		 */
 
 		getCommand("pickup").setExecutor(this);
 
@@ -67,9 +64,9 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
 		final ItemStack stack = e.getItem().getItemStack();
 		String message = "";
 		if (stack.getAmount() == 1)
-			message = getConfig().getString("message_single");
+			message = getConfig().getConfigurationSection("messages").getString("message_single");
 		else
-			message = getConfig().getString("message_multiple").replace("%amount%",
+			message = getConfig().getConfigurationSection("messages").getString("message_multiple").replace("%amount%",
 					Integer.toString(stack.getAmount()));
 
 		message = ChatColor.translateAlternateColorCodes('&', message.replace("%item%", GetItemName(stack)));
@@ -87,7 +84,8 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
 	}
 
 	private void SendMessage(Player player, String message) {
-		final String location = getConfig().getString("message_location").toUpperCase();
+		final String location = getConfig().getConfigurationSection("messages").getString("message_location")
+				.toUpperCase();
 		switch (location) {
 		case "ACTIONBAR":
 			player.sendActionBar(Component.text().content(message));

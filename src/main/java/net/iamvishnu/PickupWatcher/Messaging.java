@@ -1,4 +1,4 @@
-package PickupWatcher;
+package net.iamvishnu.PickupWatcher;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
