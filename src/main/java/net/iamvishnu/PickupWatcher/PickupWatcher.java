@@ -74,10 +74,11 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
 		SendMessage(player, message);
 	}
 
+	@SuppressWarnings("deprecation")
 	private String GetItemName(ItemStack stack) {
 		final ItemMeta meta = stack.getItemMeta();
 		if (meta.hasDisplayName())
-			return meta.displayName().toString();
+			return meta.getDisplayName();
 		if (meta.hasLocalizedName())
 			return meta.getLocalizedName();
 		return stack.getType().name();
