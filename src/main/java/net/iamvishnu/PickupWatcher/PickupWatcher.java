@@ -81,7 +81,29 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
 			return meta.getDisplayName();
 		if (meta.hasLocalizedName())
 			return meta.getLocalizedName();
-		return stack.getType().name();
+		return Capitalize(stack.getType().name().replace("_", " "));
+	}
+
+	private String Capitalize(String str) {
+		final StringBuilder builder = new StringBuilder();
+		boolean firstLetterCapitalized = false;
+		boolean afterSpaceCapitalize = false;
+		for (int i = 0; i < str.length(); i++) {
+			final char c = str.charAt(i);
+			if (c == ' ' && firstLetterCapitalized)
+				afterSpaceCapitalize = true;
+			if (!Character.isAlphabetic(c))
+				continue;
+
+			if (!firstLetterCapitalized)
+				firstLetterCapitalized = true;
+			if (afterSpaceCapitalize)
+				afterSpaceCapitalize = false;
+
+			builder.append(Character.toUpperCase(c));
+		}
+
+		return builder.toString();
 	}
 
 	private void SendMessage(Player player, String message) {
