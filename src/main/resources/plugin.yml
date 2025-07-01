@@ -1,10 +1,10 @@
 name: PickupWatcher
 description: Bukkit plugin to alert users about item pickups.
-author: IAMVISHNU Media
-website: iamvishnu.net
-api-version: 1.16
-version: 1.0.0
-main: net.iamvishnu.PickupWatcher.PickupWatcher
+author: Baphomet Media
+website: baph.xyz
+api-version: 1.21
+version: 2.0.0
+main: xyz.baph.PickupWatcher.PickupWatcher
 
 commands:
     pickup:
