@@ -75,6 +75,13 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerLogout(PlayerQuitEvent e) {
+        Player player = e.getPlayer();
+        queues.remove(player);
+        timers.remove(player);
+    }
+
     private String PrintQueue(Player player) {
         LinkedHashMap<String, Integer> playerQueue = queues.get(player);
         StringBuilder builder = new StringBuilder();
@@ -86,13 +93,6 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
         }
 
         return builder.toString();
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerLogout(PlayerQuitEvent e) {
-        Player player = e.getPlayer();
-        queues.remove(player);
-        timers.remove(player);
     }
 
     private String FirstItemInQueue(Player player) {
@@ -209,7 +209,7 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
                 player.sendActionBar(Component.text().content(message));
                 break;
             case "CHAT":
-                player.sendMessage(message);
+                player.sendMessage(Messaging.deserialize(message));
                 break;
             default:
                 serverLog.warning("Invalid location supplied. Expected: ACTIONBAR, CHAT. Found: " + location);
