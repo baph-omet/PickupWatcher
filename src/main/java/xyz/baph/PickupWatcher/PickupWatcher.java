@@ -1,16 +1,11 @@
 package xyz.baph.PickupWatcher;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Logger;
-
+import net.kyori.adventure.text.Component;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,8 +16,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatColor;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Logger;
 
 public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listener {
 
@@ -55,11 +53,11 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPickup(EntityPickupItemEvent e) {
-        if (!(e.getEntity() instanceof Player))
-            return;
+        if (e.isCancelled()) return;
+        if (!(e.getEntity() instanceof Player)) return;
+
         final Player player = (Player) e.getEntity();
-        if (IsMuted(player))
-            return;
+        if (IsMuted(player)) return;
 
         final ItemStack stack = e.getItem().getItemStack();
         AddToQueue(player, stack);
