@@ -55,7 +55,7 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPickup(EntityPickupItemEvent e) {
         if (e.isCancelled()) return;
-        if (!(e instanceof Player)) return;
+        if (!(e.getEntity() instanceof Player)) return;
         final Player player = (Player) e.getEntity();
         final ItemStack stack = e.getItem().getItemStack();
 
