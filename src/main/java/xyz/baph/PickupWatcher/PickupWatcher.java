@@ -1,6 +1,8 @@
 package xyz.baph.PickupWatcher;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,7 +30,7 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
     static final Logger serverLog = Logger.getLogger("Minecraft");
     static Plugin plugin;
 
-    static LinkedHashMap<Player, LinkedHashMap<String, Integer>> queues;
+    static LinkedHashMap<Player, LinkedHashMap<Component, Integer>> queues;
     static LinkedHashMap<Player, Timer> timers;
 
     @Override
@@ -75,12 +77,12 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
         if (IsMuted(player)) return;
         AddToQueue(player, stack);
 
-        String itemName = GetItemName(stack);
+        Component itemName = GetItemName(stack);
 
         // serverLog.info("Player " + player.getName() + " picked up " + itemName + " x" + stack.getAmount());
         // serverLog.info("CurrentQueue: " + PrintQueue(player));
 
-        if (itemName.equalsIgnoreCase(FirstItemInQueue(player))) {
+        if (itemName.equals(FirstItemInQueue(player))) {
             SendQueueMessage(player);
             ResetTimer(player);
         }
@@ -93,20 +95,7 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
         timers.remove(player);
     }
 
-    private String PrintQueue(Player player) {
-        LinkedHashMap<String, Integer> playerQueue = queues.get(player);
-        StringBuilder builder = new StringBuilder();
-        for (String itemName : playerQueue.keySet()) {
-            builder.append(itemName);
-            builder.append(": ");
-            builder.append(playerQueue.get(itemName));
-            builder.append("; ");
-        }
-
-        return builder.toString();
-    }
-
-    private String FirstItemInQueue(Player player) {
+    private Component FirstItemInQueue(Player player) {
         return queues.get(player).keySet().stream().findFirst().orElse(null);
     }
 
@@ -115,8 +104,8 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
             queues.put(player, new LinkedHashMap<>());
         }
 
-        LinkedHashMap<String, Integer> playerQueue = queues.get(player);
-        String itemName = GetItemName(stack);
+        LinkedHashMap<Component, Integer> playerQueue = queues.get(player);
+        Component itemName = GetItemName(stack);
         int amount = stack.getAmount();
         if (!playerQueue.containsKey(itemName)) {
             playerQueue.put(itemName, amount);
@@ -137,8 +126,8 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
     }
 
     private void MoveToNextStack(Player player) {
-        LinkedHashMap<String, Integer> playerQueue = queues.get(player);
-        String first = FirstItemInQueue(player);
+        LinkedHashMap<Component, Integer> playerQueue = queues.get(player);
+        Component first = FirstItemInQueue(player);
         if (first == null) {
             return;
         }
@@ -150,12 +139,12 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
     }
 
     private void SendQueueMessage(Player player) {
-        HashMap<String, Integer> playerQueue = queues.get(player);
-        String first = playerQueue.keySet().stream().findFirst().get();
+        HashMap<Component, Integer> playerQueue = queues.get(player);
+        Component first = playerQueue.keySet().stream().findFirst().get();
         SendPickupMessage(player, first, playerQueue.get(first));
     }
 
-    private void SendPickupMessage(Player player, String itemName, int quantity) {
+    private void SendPickupMessage(Player player, Component itemName, int quantity) {
         String message = "";
         if (quantity == 1)
             message = getConfig().getConfigurationSection("messages").getString("message_single");
@@ -163,26 +152,33 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
             message = getConfig().getConfigurationSection("messages").getString("message_multiple")
                     .replace("%amount%", Integer.toString(quantity));
 
-        message = ChatColor.translateAlternateColorCodes('&', message
-                .replace("%item%", itemName));
+        message = ChatColor.translateAlternateColorCodes('&', message);
 
-        SendMessage(player, message);
+        Component messageComponent = Component.text(message);
+        messageComponent = messageComponent.replaceText(
+                TextReplacementConfig.builder().match("%item%").replacement(itemName).build()
+        );
+
+        SendMessage(player, messageComponent);
     }
 
-    private String GetItemName(ItemStack stack) {
+    private Component GetItemName(ItemStack stack) {
         final ItemMeta meta = stack.getItemMeta();
-        String metaName = GetItemName(meta);
-        if (metaName != null) return metaName;
-        return Capitalize(stack.getType().name().replace('_', ' '));
+        Component metaName = GetMetaName(meta);
+        if (metaName != null) {
+            if (!metaName.hasStyling()) metaName = metaName.color(NamedTextColor.YELLOW);
+            return metaName;
+        }
+        return Component.text(Capitalize(stack.getType().name().replace('_', ' '))).color(NamedTextColor.YELLOW);
     }
 
-    private String GetItemName(ItemMeta meta) {
+    private Component GetMetaName(ItemMeta meta) {
         if (meta.hasDisplayName())
-            return meta.displayName().examinableName();
+            return meta.displayName();
         if (meta.hasCustomName())
-            return meta.customName().examinableName();
+            return meta.customName();
         if (meta.hasItemName())
-            return meta.itemName().examinableName();
+            return meta.itemName();
         return null;
     }
 
@@ -212,15 +208,15 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
         return builder.toString();
     }
 
-    private void SendMessage(Player player, String message) {
+    private void SendMessage(Player player, Component message) {
         final String location = getConfig().getConfigurationSection("messages").getString("message_location")
                 .toUpperCase();
         switch (location) {
             case "ACTIONBAR":
-                player.sendActionBar(Component.text().content(message));
+                player.sendActionBar(message);
                 break;
             case "CHAT":
-                player.sendMessage(Messaging.deserialize(message));
+                player.sendMessage(message);
                 break;
             default:
                 serverLog.warning("Invalid location supplied. Expected: ACTIONBAR, CHAT. Found: " + location);
