@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -54,12 +55,24 @@ public class PickupWatcher extends JavaPlugin implements CommandExecutor, Listen
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPickup(EntityPickupItemEvent e) {
         if (e.isCancelled()) return;
-        if (!(e.getEntity() instanceof Player)) return;
-
+        if (!(e instanceof Player)) return;
         final Player player = (Player) e.getEntity();
-        if (IsMuted(player)) return;
-
         final ItemStack stack = e.getItem().getItemStack();
+
+        ItemPickedUp(player, stack);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onArrowPickup(PlayerPickupArrowEvent e) {
+        if (e.isCancelled()) return;
+        final Player player = e.getPlayer();
+        final ItemStack stack = e.getArrow().getItemStack();
+
+        ItemPickedUp(player, stack);
+    }
+
+    private void ItemPickedUp(Player player, ItemStack stack) {
+        if (IsMuted(player)) return;
         AddToQueue(player, stack);
 
         String itemName = GetItemName(stack);
